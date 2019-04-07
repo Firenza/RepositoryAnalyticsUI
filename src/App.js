@@ -7,45 +7,8 @@ import parse from 'autosuggest-highlight/parse';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import Popper from '@material-ui/core/Popper';
 import { withStyles } from '@material-ui/core/styles';
-
-const suggestions = [
-  { label: 'Afghanistan' },
-  { label: 'Aland Islands' },
-  { label: 'Albania' },
-  { label: 'Algeria' },
-  { label: 'American Samoa' },
-  { label: 'Andorra' },
-  { label: 'Angola' },
-  { label: 'Anguilla' },
-  { label: 'Antarctica' },
-  { label: 'Antigua and Barbuda' },
-  { label: 'Argentina' },
-  { label: 'Armenia' },
-  { label: 'Aruba' },
-  { label: 'Australia' },
-  { label: 'Austria' },
-  { label: 'Azerbaijan' },
-  { label: 'Bahamas' },
-  { label: 'Bahrain' },
-  { label: 'Bangladesh' },
-  { label: 'Barbados' },
-  { label: 'Belarus' },
-  { label: 'Belgium' },
-  { label: 'Belize' },
-  { label: 'Benin' },
-  { label: 'Bermuda' },
-  { label: 'Bhutan' },
-  { label: 'Bolivia, Plurinational State of' },
-  { label: 'Bonaire, Sint Eustatius and Saba' },
-  { label: 'Bosnia and Herzegovina' },
-  { label: 'Botswana' },
-  { label: 'Bouvet Island' },
-  { label: 'Brazil' },
-  { label: 'British Indian Ocean Territory' },
-  { label: 'Brunei Darussalam' },
-];
+import axios from 'axios';
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
@@ -68,8 +31,8 @@ function renderInputComponent(inputProps) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.label, query);
-  const parts = parse(suggestion.label, matches);
+  const matches = match(suggestion, query);
+  const parts = parse(suggestion, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
@@ -90,27 +53,8 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-function getSuggestions(value) {
-  const inputValue = deburr(value.trim()).toLowerCase();
-  const inputLength = inputValue.length;
-  let count = 0;
-
-  return inputLength === 0
-    ? []
-    : suggestions.filter(suggestion => {
-        const keep =
-          count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
-
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      });
-}
-
 function getSuggestionValue(suggestion) {
-  return suggestion.label;
+  return suggestion;
 }
 
 const styles = theme => ({
@@ -149,8 +93,35 @@ class IntegrationAutosuggest extends React.Component {
   };
 
   handleSuggestionsFetchRequested = ({ value }) => {
-    this.setState({
-      suggestions: getSuggestions(value),
+    const inputValue = deburr(value.trim()).toLowerCase();
+    const inputLength = inputValue.length;
+    let count = 0;
+  
+    axios.get(`http://localhost:33283/api/dependencies/names?nameRegex=${value}`)
+    .then(response => {
+      console.log("Request done");
+      console.log(response.data);
+  
+      let bobs =  inputLength === 0
+      ? []
+      : response.data.filter(suggestion => {
+          const keep =
+            count < 5;
+  
+          if (keep) {
+            count += 1;
+          }
+  
+          return keep;
+        });
+
+      console.log()
+      this.setState({
+        suggestions: bobs,
+      });
+    })
+    .catch(error => {
+      console.log(error);
     });
   };
 
@@ -195,41 +166,10 @@ class IntegrationAutosuggest extends React.Component {
             suggestion: classes.suggestion,
           }}
           renderSuggestionsContainer={options => (
+          
             <Paper {...options.containerProps} square>
               {options.children}
             </Paper>
-          )}
-        />
-        <div className={classes.divider} />
-        <Autosuggest
-          {...autosuggestProps}
-          inputProps={{
-            classes,
-            label: 'Label',
-            placeholder: 'With Popper',
-            value: this.state.popper,
-            onChange: this.handleChange('popper'),
-            inputRef: node => {
-              this.popperNode = node;
-            },
-            InputLabelProps: {
-              shrink: true,
-            },
-          }}
-          theme={{
-            suggestionsList: classes.suggestionsList,
-            suggestion: classes.suggestion,
-          }}
-          renderSuggestionsContainer={options => (
-            <Popper anchorEl={this.popperNode} open={Boolean(options.children)}>
-              <Paper
-                square
-                {...options.containerProps}
-                style={{ width: this.popperNode ? this.popperNode.clientWidth : null }}
-              >
-                {options.children}
-              </Paper>
-            </Popper>
           )}
         />
       </div>
