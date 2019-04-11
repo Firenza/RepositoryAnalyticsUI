@@ -92,48 +92,38 @@ class IntegrationAutosuggest extends React.Component {
     suggestions: [],
   };
 
-  handleSuggestionsFetchRequested = ({ value }) => {
+  handleSuggestionsFetchRequested = async ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
     const inputLength = inputValue.length;
     let count = 0;
   
-    axios.get(`http://localhost:33283/api/dependencies/names?nameRegex=${value}`)
-    .then(response => {
-      console.log("Request done");
-      console.log(response.data);
-  
-      let bobs =  inputLength === 0
-      ? []
-      : response.data.filter(suggestion => {
-          const keep =
-            count < 5;
-  
-          if (keep) {
-            count += 1;
-          }
-  
-          return keep;
-        });
+    const response = await axios.get(`http://localhost:33283/api/dependencies/names?nameRegex=${value}`)
+    
+    let bobs =  inputLength === 0
+    ? []
+    : response.data.filter(suggestion => {
+        const keep =
+          count < 5;
 
-      console.log()
-      this.setState({
-        suggestions: bobs,
+        if (keep) {
+          count += 1;
+        }
+
+        return keep;
       });
-    })
-    .catch(error => {
-      console.log(error);
+
+    this.setState({
+      suggestions: bobs,
     });
   };
 
   handleSuggestionsClearRequested = () => {
-    console.log('suggestions cleared');
     this.setState({
       suggestions: [],
     });
   };
 
   handleChange = name => (event, { newValue }) => {
-    console.log('handle change');
     this.setState({
       [name]: newValue,
     });
