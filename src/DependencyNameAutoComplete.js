@@ -60,7 +60,6 @@ function getSuggestionValue(suggestion) {
 
 const styles = theme => ({
   root: {
-    height: 250,
     flexGrow: 1,
   },
   container: {
@@ -87,10 +86,14 @@ const styles = theme => ({
 });
 
 class IntegrationAutosuggest extends React.Component {
-  state = {
-    single: '',
-    suggestions: [],
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+        single: props.initialValue || '',
+        suggestions: [],
+    };
+  }
 
   handleSuggestionsFetchRequested = async ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
@@ -176,6 +179,7 @@ class IntegrationAutosuggest extends React.Component {
 }
 
 IntegrationAutosuggest.propTypes = {
+  initialValue: PropTypes.string,
   classes: PropTypes.object.isRequired,
   onDependencySelected: PropTypes.func.isRequired
 };
