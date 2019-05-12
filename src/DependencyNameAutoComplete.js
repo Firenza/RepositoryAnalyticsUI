@@ -100,7 +100,7 @@ class IntegrationAutosuggest extends React.Component {
     const inputLength = inputValue.length;
     let count = 0;
   
-    const response = await axios.get(`http://localhost:33283/api/dependencies/names?nameRegex=${value}`)
+    const response = await axios.get(`${window._env_.API_URL}/api/dependencies/names?nameRegex=${value}`)
     
     let bobs =  inputLength === 0
     ? []

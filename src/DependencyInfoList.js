@@ -32,7 +32,7 @@ class DependencyInfoList extends React.Component {
 
     if (this.props.dependencyName !== prevProps.dependencyName) {
 
-      const response = await axios.get(`http://localhost:33283/api/dependencies/${this.props.dependencyName}`)
+      const response = await axios.get(`${window._env_.API_URL}/api/dependencies/${this.props.dependencyName}`)
 
       console.log(response);
 
