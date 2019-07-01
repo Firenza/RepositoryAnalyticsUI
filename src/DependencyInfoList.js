@@ -4,7 +4,6 @@ import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import List, { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography'
 
 const styles = theme => ({
@@ -55,10 +54,9 @@ class DependencyInfoList extends React.Component {
             <Paper>
               <Grid container className={classes.root} justify="center">
                 <Grid>
-
                 </Grid>
-                <Grid item xs={2}>
-                  <Typography>{di.repositoryDependency.name}</Typography>
+                <Grid item xs={8}>
+                  <Typography component="h2">{di.repositoryDependency.name}</Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Typography>{di.repositoryDependency.version}</Typography>
