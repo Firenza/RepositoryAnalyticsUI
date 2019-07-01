@@ -25,6 +25,8 @@ class Dependencies extends React.Component {
   }
 
   updateSelectedDependencyName(name) {
+    this.props.history.push(`/dependencies/${name}`)
+  
     this.setState({
       selectedDependencyName: name
     });
