@@ -9,6 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import { throttle, debounce } from "throttle-debounce";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
@@ -93,31 +94,51 @@ class IntegrationAutosuggest extends React.Component {
         single: props.initialValue || '',
         suggestions: [],
     };
+
+    this.autoCompleteSearchThrottled = throttle(500, this.autoCompleteSearch);
+    this.autoCompleteSearchDebounced = debounce(500, this.autoCompleteSearch);
+  }
+
+  autoCompleteSearch = async (inputValue) => {
+    const inputLength = inputValue.length;
+    let suggestionsKept = 0;
+  
+    this.lastSearchValue = inputValue;
+
+    const response = await axios.get(`${window._env_.API_URL}/api/dependencies/names?nameRegex=${inputValue}`)
+    
+    // Only proces the results this was the latest request
+    if (this.lastSearchValue === inputValue) {
+      
+      let suggestions = inputLength === 0
+      ? []
+      // If there were matches returned filter out all by the first few suggestions
+      : response.data.filter(suggestion => {
+          const keepSuggestion = suggestionsKept < 5;
+
+          if (keepSuggestion) {
+            suggestionsKept += 1;
+          }
+
+          return keepSuggestion;
+        });
+
+      this.setState({
+        suggestions: suggestions,
+      });
+    }
   }
 
   handleSuggestionsFetchRequested = async ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
-    const inputLength = inputValue.length;
-    let count = 0;
-  
-    const response = await axios.get(`${window._env_.API_URL}/api/dependencies/names?nameRegex=${value}`)
-    
-    let bobs =  inputLength === 0
-    ? []
-    : response.data.filter(suggestion => {
-        const keep =
-          count < 5;
 
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      });
-
-    this.setState({
-      suggestions: bobs,
-    });
+    // Throttle at the start to show some results so users knows things are working
+    // debounce after that to reduce the quanity of requests
+    if(inputValue.length < 5){
+      await this.autoCompleteSearchThrottled(inputValue);
+    } else {
+      await this.autoCompleteSearchDebounced(inputValue);
+    }
   };
 
   handleSuggestionsClearRequested = () => {
