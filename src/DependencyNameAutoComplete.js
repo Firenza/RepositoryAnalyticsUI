@@ -102,8 +102,6 @@ class IntegrationAutosuggest extends React.Component {
   autoCompleteSearch = async (inputValue) => {
     const inputLength = inputValue.length;
     let suggestionsKept = 0;
-  
-    this.lastSearchValue = inputValue;
 
     const response = await axios.get(`${window._env_.API_URL}/api/dependencies/names?nameRegex=${inputValue}`)
     
@@ -131,6 +129,8 @@ class IntegrationAutosuggest extends React.Component {
 
   handleSuggestionsFetchRequested = async ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
+
+    this.lastSearchValue = inputValue;
 
     // Throttle at the start to show some results so users knows things are working
     // debounce after that to reduce the quanity of requests
