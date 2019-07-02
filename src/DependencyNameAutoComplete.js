@@ -177,7 +177,7 @@ class IntegrationAutosuggest extends React.Component {
           {...autosuggestProps}
           inputProps={{
             classes,
-            placeholder: 'Enter your dependency name (case sensitive)',
+            placeholder: 'Search for dependency by name',
             value: this.state.single,
             onChange: this.handleChange('single'),
           }}
