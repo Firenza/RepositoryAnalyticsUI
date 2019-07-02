@@ -5,6 +5,16 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 This application assumes you are using a Linux shell for exeucting npm commands (as some run shell scripts). For Windows you can either install something like [CMDer](https://cmder.net/) or use Windows Subsytem for Linux.  
 
+## Configuration Settings
+
+Configuration data for the site is configured in a manner to allow the configuration to be specified at conatiner startup time
+when running the site in a docker contianer.  When running locally all configuraiton changes must be made to the `.env` file.  This same environment variable data can be passed to a contaner at run time.
+
+#### The process for transforming the environemnt varaible data to javascript variables
+1. `.env` data (or environment variables if available when running in a container) is transofrmed by the `env.sh` file into json the `env-config.js` file
+2. `env-config.js` is copied over to the public folder
+3. Main HTML page loads the `env-config.js` script into a global variable (`window._env_`) when the page loads
+
 ## Available Scripts
 
 In the project directory, you can run:
