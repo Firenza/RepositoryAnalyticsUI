@@ -1,5 +1,10 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+## Prerequisites
+
+This application assumes you are using a Linux shell for exeucting npm commands (as some run shell scripts). For Windows you can either install something like [CMDer](https://cmder.net/) or use Windows Subsytem for Linux.  
+
 ## Available Scripts
 
 In the project directory, you can run:
