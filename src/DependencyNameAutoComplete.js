@@ -55,7 +55,6 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
 }
 
 function getSuggestionValue(suggestion) {
-  console.log('Suggestion picked!')
   return suggestion;
 }
 
@@ -154,8 +153,7 @@ class IntegrationAutosuggest extends React.Component {
   };
 
   handleSuggestionSelected = (_event, data) =>{
-      console.log(`Suggestion selected! ${data.suggestion}`);
-      this.props.onDependencySelected(data.suggestion);
+    this.props.onDependencySelected(data.suggestion);
   } 
 
   render() {
