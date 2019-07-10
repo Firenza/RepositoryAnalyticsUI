@@ -1,61 +1,47 @@
-import React from 'react';
+import React , { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import { makeStyles  } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 
-const styles = theme => ({
+const useStyles = makeStyles({
   root: {
     flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
+    padding: 0,
   },
 });
 
-class DependencyInfoList extends React.Component {
-  constructor(props) {
-    super(props);
+function DependencyInfoList(props) {
 
-    this.state = {
-      dependencyInfos: []
-    };
-  }
+  const [dependencyInfos, setDependencyInfos] = useState(null);
 
-  async componentDidUpdate(prevProps) {
-
-    if (this.props.dependencyName !== prevProps.dependencyName) {
-
-      const response = await axios.get(`${window._env_.API_URL}/api/dependencies/${this.props.dependencyName}`)
-
-      console.log(response);
-
-      this.setState({
-        dependencyInfos: response.data
-      });
+  useEffect(() => {
+    if (props.dependencyName) {
+      async function fetchData(){
+        const response = await axios.get(`${window._env_.API_URL}/api/dependencies/${props.dependencyName}`);
+    
+        setDependencyInfos(response.data);
+      }
+  
+      fetchData();
     }
-  }
+  }, [props.dependencyName] /* Only run this effect once */);
 
-  render() {
+  const classes = useStyles();
 
-    console.log("Rendering Info List");
+  return (
+    <>
+      {dependencyInfos && dependencyInfos.length > 0 && dependencyInfos.map(di =>
+        <div key={`${di.repositoryDependency.name}|${di.repositoryDependency.version}`} className={classes.root}>
 
-    const { classes } = this.props;
-
-    return (
-      <div>
-        {this.state.dependencyInfos.length > 0 && this.state.dependencyInfos.map(di =>
-          <div className={classes.root}>
-            <Paper>
+          <List component="nav" aria-label="Main mailbox folders" className={classes.root}>
+            <ListItem button className={classes.root}> 
               <Grid container className={classes.root} justify="center">
-                <Grid>
-                </Grid>
                 <Grid item xs={8}>
-                  <Typography component="h2">{di.repositoryDependency.name}</Typography>
+                  <Typography>{di.repositoryDependency.name}</Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Typography>{di.repositoryDependency.version}</Typography>
@@ -64,17 +50,16 @@ class DependencyInfoList extends React.Component {
                   <Typography>{di.count}</Typography>
                 </Grid>
               </Grid>
-            </Paper>
-          </div>
-        )}
-      </div>
-    );
-  }
-
+            </ListItem>
+          </List>
+        </div>
+      )}
+    </>
+  );
 }
 
 DependencyInfoList.propTypes = {
   dependencyName: PropTypes.string.isRequired
 };
 
-export default withStyles(styles)(DependencyInfoList);
+export default DependencyInfoList;
