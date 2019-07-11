@@ -32,8 +32,6 @@ function RepositoryTypes()  {
     async function fetchData(){
       const response = await axios.get(`${window._env_.API_URL}/api/repositories/types`)  
    
-      console.log(response);
-  
       setRepositoryTypeInfo(response.data);
     }
 
