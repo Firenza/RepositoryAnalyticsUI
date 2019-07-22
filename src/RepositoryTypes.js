@@ -2,10 +2,6 @@ import React , { useState, useEffect } from 'react';
 import axios from 'axios';
 import Chart from "react-google-charts";
 
-
-
-
-
 function RepositoryTypes()  {
 
   const [repositoryTypeInfo, setRepositoryTypeInfo] = useState(null);
@@ -25,28 +21,29 @@ function RepositoryTypes()  {
     {
       eventName: 'select',
       callback: ({chartWrapper}) => {
+        // Expand the currently clicked pie slice
         const chart = chartWrapper.getChart()
         const selection = chart.getSelection()
+
         if (selection.length === 1) {
           const [selectedItem] = selection
-          const dataTable = chartWrapper.getDataTable()
           const { row } = selectedItem
           
-          console.log(selection)
-
           let slice = {}
-          slice[row] = {offset: .3};
+          let currentlySeletedRow = selectedPieSlice && Object.keys(selectedPieSlice)[0];
+
+          if(currentlySeletedRow != row){
+            slice[row] = {offset: .2};
+          }
   
           setSelectedPieSlice(slice);
-  
-          console.log(slice)
         }
       },
     },
   ];
 
   const pieOptions = {
-    title: "HEY I'M A TITLE",
+    title: "REPOSITORY TYPES",
     animation:{
       startup: true,
       duration: 1000,
@@ -73,7 +70,6 @@ function RepositoryTypes()  {
     fontName: "Roboto"
   };
 
-
   let createChartDataArray = () => {
     let data = [["Name", "Count"]];
   
@@ -86,7 +82,6 @@ function RepositoryTypes()  {
   };
 
   return (
-    
     <div>
       {repositoryTypeInfo != null && 
         <Chart
