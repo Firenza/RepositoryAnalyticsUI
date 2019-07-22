@@ -10,7 +10,7 @@ function MainPage() {
           <Link to="/RepositoryTypes/">RepositoryTypes</Link>
         </li>
         <li> 
-          <Link to="/Dependencies/">Dependencies</Link>
+          <Link to="/Categorizations/">Categorizations</Link>
         </li>
       </ul>
     </>

@@ -3,20 +3,22 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import Chart from "react-google-charts";
 
-function RepositoryTypes(props)  {
+function RepositoryImplementations(props)  {
 
   const [repositoryTypeInfo, setRepositoryTypeInfo] = useState(null);
   const [selectedPieSlice, setSelectedPieSlice] = useState(null);
 
   useEffect(() => {
+    console.log(props.selectedRepositoryType);
+
     async function fetchData(){
-      const response = await axios.get(`${window._env_.API_URL}/api/repositories/types`)  
+      const response = await axios.get(`${window._env_.API_URL}/api/repositories/${props.selectedRepositoryType}/implementations`)  
    
       setRepositoryTypeInfo(response.data);
     }
 
     fetchData();
-  }, [] /* Only run this effect once */);
+  }, [props.selectedRepositoryType]);
 
   const chartEvents = [
     {
@@ -25,12 +27,10 @@ function RepositoryTypes(props)  {
         // Expand the currently clicked pie slice
         const chart = chartWrapper.getChart()
         const selection = chart.getSelection()
-        const dataTable = chartWrapper.getDataTable()
 
         if (selection.length === 1) {
           const [selectedItem] = selection
           const { row } = selectedItem
-          const selectedRepositoryType = dataTable.getValue(row,0);
           
           let slice = {}
           let currentlySeletedRow = selectedPieSlice && Object.keys(selectedPieSlice)[0];
@@ -40,14 +40,13 @@ function RepositoryTypes(props)  {
           }
   
           setSelectedPieSlice(slice);
-          props.updateSelectedRepositoryType(selectedRepositoryType);
         }
       },
     },
   ];
 
   const pieOptions = {
-    title: "REPOSITORY TYPES",
+    title: `${props.selectedRepositoryType} REPOSITORY IMPLEMENTATIONS`,
     animation:{
       startup: true,
       duration: 1000,
@@ -101,10 +100,9 @@ function RepositoryTypes(props)  {
   )
 }
 
-RepositoryTypes.propTypes = {
-  updateSelectedRepositoryType: PropTypes.func.isRequired,
+RepositoryImplementations.propTypes = {
   selectedRepositoryType: PropTypes.string.isRequired
 };
 
 
-export default RepositoryTypes;
+export default RepositoryImplementations;
