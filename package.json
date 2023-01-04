@@ -14,7 +14,7 @@
     "react-google-charts": "^3.0.13",
     "react-jss": "^8.6.1",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8",
+    "react-scripts": "5.0.1",
     "throttle-debounce": "^2.1.0"
   },
   "scripts": {
